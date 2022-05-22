@@ -21,6 +21,24 @@ const client = new MongoClient(uri, {
 // Database Operations
 async function run() {
   try {
+    await client.connect();
+    const productCollection = client.db("tool_planet").collection("products");
+
+    // Get all products or particular number of products from database
+    app.get("/products", async (req, res) => {
+      const dataSize = parseInt(req.query.size);
+      if (dataSize) {
+        const result = await productCollection
+          .find()
+          .skip(0)
+          .limit(dataSize)
+          .toArray();
+        res.send(result);
+      } else {
+        const result = await productCollection.find().toArray();
+        res.send(result);
+      }
+    });
   } finally {
     //   await client.close();
   }
