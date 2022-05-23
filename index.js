@@ -23,6 +23,7 @@ async function run() {
   try {
     await client.connect();
     const productCollection = client.db("tool_planet").collection("products");
+    const userCollection = client.db("tool_planet").collection("users");
 
     // Get all products or particular number of products from database
     app.get("/products", async (req, res) => {
@@ -38,6 +39,19 @@ async function run() {
         const result = await productCollection.find().toArray();
         res.send(result);
       }
+    });
+
+    // Save user info on database when user register the app and also give them token whenever they registered or login
+    app.put("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const filter = { email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: req.body,
+      };
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+      var token = jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET);
+      res.send({ result, token });
     });
   } finally {
     //   await client.close();
