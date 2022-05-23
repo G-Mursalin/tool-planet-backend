@@ -24,6 +24,7 @@ async function run() {
     await client.connect();
     const productCollection = client.db("tool_planet").collection("products");
     const userCollection = client.db("tool_planet").collection("users");
+    const orderCollection = client.db("tool_planet").collection("orders");
 
     // Get all products or particular number of products from database (products components)
     app.get("/products", async (req, res) => {
@@ -60,6 +61,20 @@ async function run() {
         _id: ObjectId(req.params.id),
       });
       res.send(result);
+    });
+    // Get all orders
+    app.post("/orders", async (req, res) => {
+      const exists = await orderCollection.findOne({
+        productId: req.body.productId,
+        customerEmail: req.body.customerEmail,
+      });
+      if (exists)
+        return res.send({
+          success: false,
+          info: "Already booked. Please order other products",
+        });
+      const result = await orderCollection.insertOne(req.body);
+      res.send({ success: true, info: "Order Successful" });
     });
   } finally {
     //   await client.close();
