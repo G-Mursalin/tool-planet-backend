@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 require("dotenv").config();
@@ -25,7 +25,7 @@ async function run() {
     const productCollection = client.db("tool_planet").collection("products");
     const userCollection = client.db("tool_planet").collection("users");
 
-    // Get all products or particular number of products from database
+    // Get all products or particular number of products from database (products components)
     app.get("/products", async (req, res) => {
       const dataSize = parseInt(req.query.size);
       if (dataSize) {
@@ -41,7 +41,7 @@ async function run() {
       }
     });
 
-    // Save user info on database when user register the app and also give them token whenever they registered or login
+    // Save user info on database when user register the app and also give them token whenever they registered or login (useToken component)
     app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
       const filter = { email };
@@ -52,6 +52,14 @@ async function run() {
       const result = await userCollection.updateOne(filter, updateDoc, options);
       var token = jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET);
       res.send({ result, token });
+    });
+
+    // Get a particular product using ID (Order component)
+    app.get("/product/:id", async (req, res) => {
+      const result = await productCollection.findOne({
+        _id: ObjectId(req.params.id),
+      });
+      res.send(result);
     });
   } finally {
     //   await client.close();
