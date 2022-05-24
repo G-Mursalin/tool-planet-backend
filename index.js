@@ -43,6 +43,7 @@ async function run() {
     const productCollection = client.db("tool_planet").collection("products");
     const userCollection = client.db("tool_planet").collection("users");
     const orderCollection = client.db("tool_planet").collection("orders");
+    const reviewCollection = client.db("tool_planet").collection("reviews");
 
     // Get all products or particular number of products from database (products components)
     app.get("/products", async (req, res) => {
@@ -112,6 +113,17 @@ async function run() {
         _id: ObjectID(req.params.id),
       });
       res.send(result);
+    });
+
+    // Post all reviews (AddAReviews component)
+    app.post("/reviews", verifyJWT, async (req, res) => {
+      const result = await reviewCollection.insertOne(req.body);
+      res.send({ success: true, info: "Review Added Successful" });
+    });
+    // Get all reviews (Home component)
+    app.get("/reviews", async (req, res) => {
+      const reviews = await reviewCollection.find().toArray();
+      res.send(reviews);
     });
   } finally {
     //   await client.close();
