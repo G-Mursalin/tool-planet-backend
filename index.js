@@ -49,6 +49,7 @@ async function run() {
       if (dataSize) {
         const result = await productCollection
           .find()
+          .sort({ _id: -1 })
           .skip(0)
           .limit(dataSize)
           .toArray();
@@ -92,6 +93,17 @@ async function run() {
         });
       const result = await orderCollection.insertOne(req.body);
       res.send({ success: true, info: "Order Successful" });
+    });
+    // Get all orders of particular email (My orders components)
+    app.get("/order", verifyJWT, async (req, res) => {
+      if (req.query.email === req.decoded.email) {
+        const orders = await orderCollection
+          .find({ customerEmail: req.query.email })
+          .toArray();
+        res.send(orders);
+      } else {
+        return res.status(403).send({ message: "Forbidden Access" });
+      }
     });
   } finally {
     //   await client.close();
