@@ -44,6 +44,9 @@ async function run() {
     const userCollection = client.db("tool_planet").collection("users");
     const orderCollection = client.db("tool_planet").collection("orders");
     const reviewCollection = client.db("tool_planet").collection("reviews");
+    const userProfileCollection = client
+      .db("tool_planet")
+      .collection("profiles");
 
     // Get all products or particular number of products from database (products components)
     app.get("/products", async (req, res) => {
@@ -124,6 +127,43 @@ async function run() {
     app.get("/reviews", async (req, res) => {
       const reviews = await reviewCollection.find().toArray();
       res.send(reviews);
+    });
+    //Post all user profile info (My Profile component)
+    app.put("/userprofile", verifyJWT, async (req, res) => {
+      const filter = { userEmail: req.body.userEmail };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: req.body,
+      };
+      const result = await userProfileCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send({ success: true, info: "Info. Added Successful" });
+    });
+    // app.post("/userprofile", verifyJWT, async (req, res) => {
+    //   const userExists = await userProfileCollection.findOne({
+    //     userEmail: req.body.userEmail,
+    //   });
+    //   if (userExists) {
+    //     res.send({ success: false, info: "User info already added" });
+    //     console.log("Yes i exists");
+    //   } else {
+    //     const result = await userProfileCollection.insertOne(req.body);
+    //     res.send({ success: true, info: "Info. Added Successful" });
+    //   }
+    // });
+    // Get particular profile info using email (MyProfile component)
+    app.get("/userprofile", verifyJWT, async (req, res) => {
+      const userInfoExist = await userProfileCollection.findOne({
+        userEmail: req.query.userEmail,
+      });
+      if (userInfoExist) {
+        res.send({ userInfo: true, userInfoExist });
+      } else {
+        res.send({ userInfo: false });
+      }
     });
   } finally {
     //   await client.close();
