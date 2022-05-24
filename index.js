@@ -3,6 +3,7 @@ const app = express();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
+const { ObjectID } = require("bson");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 
@@ -104,6 +105,13 @@ async function run() {
       } else {
         return res.status(403).send({ message: "Forbidden Access" });
       }
+    });
+    // Delete order using ID (MyOrders Component)
+    app.delete("/order/:id", verifyJWT, async (req, res) => {
+      const result = await orderCollection.deleteOne({
+        _id: ObjectID(req.params.id),
+      });
+      res.send(result);
     });
   } finally {
     //   await client.close();
