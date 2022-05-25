@@ -195,6 +195,11 @@ async function run() {
       const isAdmin = user.role === "admin";
       res.send({ admin: isAdmin });
     });
+    // Post all product (AddAProduct component)
+    app.post("/product", verifyJWT, async (req, res) => {
+      const result = await productCollection.insertOne(req.body);
+      res.send({ success: true, info: "Product Added Successful" });
+    });
   } finally {
     //   await client.close();
   }
