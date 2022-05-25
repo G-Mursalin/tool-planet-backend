@@ -142,19 +142,7 @@ async function run() {
       );
       res.send({ success: true, info: "Info. Added Successful" });
     });
-    // app.post("/userprofile", verifyJWT, async (req, res) => {
-    //   const userExists = await userProfileCollection.findOne({
-    //     userEmail: req.body.userEmail,
-    //   });
-    //   if (userExists) {
-    //     res.send({ success: false, info: "User info already added" });
-    //     console.log("Yes i exists");
-    //   } else {
-    //     const result = await userProfileCollection.insertOne(req.body);
-    //     res.send({ success: true, info: "Info. Added Successful" });
-    //   }
-    // });
-    // Get particular profile info using email (MyProfile component)
+
     app.get("/userprofile", verifyJWT, async (req, res) => {
       const userInfoExist = await userProfileCollection.findOne({
         userEmail: req.query.userEmail,
