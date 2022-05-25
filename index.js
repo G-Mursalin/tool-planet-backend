@@ -188,6 +188,13 @@ async function run() {
       const result = await productCollection.insertOne(req.body);
       res.send({ success: true, info: "Product Added Successful" });
     });
+    // Delete order using ID (MyOrders Component)
+    app.delete("/product/:id", verifyJWT, async (req, res) => {
+      const result = await productCollection.deleteOne({
+        _id: ObjectID(req.params.id),
+      });
+      res.send(result);
+    });
   } finally {
     //   await client.close();
   }
