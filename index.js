@@ -9,7 +9,23 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const port = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+// app.use(cors());
+const corsConfig = {
+  origin: "*",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+};
+app.use(cors(corsConfig));
+app.options("*", cors(corsConfig));
+app.use(express.json());
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept,authorization"
+  );
+  next();
+});
 app.use(express.json());
 
 // Verifying Token From User
@@ -202,6 +218,7 @@ async function run() {
       const result = await productCollection.insertOne(req.body);
       res.send({ success: true, info: "Product Added Successful" });
     });
+
     // Delete products using ID (ManageProducts Component)
     app.delete("/product/:id", verifyJWT, verifyAdmin, async (req, res) => {
       const result = await productCollection.deleteOne({
@@ -209,8 +226,9 @@ async function run() {
       });
       res.send(result);
     });
+
     // *******All Payment Related Apis*******
-    app.post("/create-payment-intent", verifyJWT, async (req, res) => {
+    app.post("/create-payment-intent", async (req, res) => {
       const service = req.body;
       const price = service.price;
       const amount = price * 100;
