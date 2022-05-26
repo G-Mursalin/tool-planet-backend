@@ -2,10 +2,10 @@ const express = require("express");
 const app = express();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const cors = require("cors");
 const { ObjectID } = require("bson");
 require("dotenv").config();
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const port = process.env.PORT || 5000;
 
 // Middleware
@@ -210,8 +210,9 @@ async function run() {
       res.send(result);
     });
     // *******All Payment Related Apis*******
-    app.post("/creat-payment-intent", verifyJWT, async (req, res) => {
-      const { price } = req.body;
+    app.post("/create-payment-intent", verifyJWT, async (req, res) => {
+      const service = req.body;
+      const price = service.price;
       const amount = price * 100;
       const paymentIntent = await stripe.paymentIntents.create({
         amount: amount,
