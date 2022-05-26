@@ -174,24 +174,6 @@ async function run() {
       res.send(users);
     });
     // Make admin
-    // app.put("/user/admin/:email", verifyJWT , async (req, res) => {
-    //   const email = req.params.email;
-    //   const requester = req.decoded.email;
-
-    //   const requesterAccount = await userCollection.findOne({
-    //     email: requester,
-    //   });
-    //   if (requesterAccount.role === "admin") {
-    //     const filter = { email: email };
-    //     const updateDoc = {
-    //       $set: { role: "admin" },
-    //     };
-    //     const result = await userCollection.updateOne(filter, updateDoc);
-    //     res.send(result);
-    //   } else {
-    //     return res.status(403).send({ message: "Forbidden Access" });
-    //   }
-    // });
     app.put("/user/admin/:email", verifyJWT, verifyAdmin, async (req, res) => {
       const email = req.params.email;
       const filter = { email: email };
@@ -208,7 +190,7 @@ async function run() {
       res.send({ admin: isAdmin });
     });
     // Post all product (AddAProduct component)
-    app.post("/product", verifyJWT, async (req, res) => {
+    app.post("/product", verifyJWT, verifyAdmin, async (req, res) => {
       const result = await productCollection.insertOne(req.body);
       res.send({ success: true, info: "Product Added Successful" });
     });
