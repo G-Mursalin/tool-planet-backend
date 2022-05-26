@@ -48,6 +48,20 @@ async function run() {
       .db("tool_planet")
       .collection("profiles");
 
+    // Verify admin
+    const verifyAdmin = async (req, res, next) => {
+      const requester = req.decoded.email;
+
+      const requesterAccount = await userCollection.findOne({
+        email: requester,
+      });
+      if (requesterAccount.role === "admin") {
+        next();
+      } else {
+        return res.status(403).send({ message: "Forbidden Access" });
+      }
+    };
+
     // Get all products or particular number of products from database (products components)
     app.get("/products", async (req, res) => {
       const dataSize = parseInt(req.query.size);
@@ -143,6 +157,7 @@ async function run() {
       res.send({ success: true, info: "Info. Added Successful" });
     });
 
+    // Get user profile info (My Profile component)
     app.get("/userprofile", verifyJWT, async (req, res) => {
       const userInfoExist = await userProfileCollection.findOne({
         userEmail: req.query.userEmail,
@@ -159,23 +174,32 @@ async function run() {
       res.send(users);
     });
     // Make admin
-    app.put("/user/admin/:email", verifyJWT, async (req, res) => {
-      const email = req.params.email;
-      const requester = req.decoded.email;
+    // app.put("/user/admin/:email", verifyJWT , async (req, res) => {
+    //   const email = req.params.email;
+    //   const requester = req.decoded.email;
 
-      const requesterAccount = await userCollection.findOne({
-        email: requester,
-      });
-      if (requesterAccount.role === "admin") {
-        const filter = { email: email };
-        const updateDoc = {
-          $set: { role: "admin" },
-        };
-        const result = await userCollection.updateOne(filter, updateDoc);
-        res.send(result);
-      } else {
-        return res.status(403).send({ message: "Forbidden Access" });
-      }
+    //   const requesterAccount = await userCollection.findOne({
+    //     email: requester,
+    //   });
+    //   if (requesterAccount.role === "admin") {
+    //     const filter = { email: email };
+    //     const updateDoc = {
+    //       $set: { role: "admin" },
+    //     };
+    //     const result = await userCollection.updateOne(filter, updateDoc);
+    //     res.send(result);
+    //   } else {
+    //     return res.status(403).send({ message: "Forbidden Access" });
+    //   }
+    // });
+    app.put("/user/admin/:email", verifyJWT, verifyAdmin, async (req, res) => {
+      const email = req.params.email;
+      const filter = { email: email };
+      const updateDoc = {
+        $set: { role: "admin" },
+      };
+      const result = await userCollection.updateOne(filter, updateDoc);
+      res.send(result);
     });
     // Get If user is admin or not
     app.get("/user/admin/:email", async (req, res) => {
