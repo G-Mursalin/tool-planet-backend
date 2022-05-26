@@ -124,6 +124,13 @@ async function run() {
         return res.status(403).send({ message: "Forbidden Access" });
       }
     });
+    // Get orders by particular id (Payment component)
+    app.get("/order/:id", verifyJWT, async (req, res) => {
+      const result = await orderCollection.findOne({
+        _id: ObjectId(req.params.id),
+      });
+      res.send(result);
+    });
     // Delete order using ID (MyOrders Component)
     app.delete("/order/:id", verifyJWT, async (req, res) => {
       const result = await orderCollection.deleteOne({
