@@ -7,25 +7,9 @@ const { ObjectID } = require("bson");
 require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const port = process.env.PORT || 5000;
-
+// Private repo to public repo
 // Middleware
 app.use(cors());
-// const corsConfig = {
-//   origin: "*",
-//   credentials: true,
-//   methods: ["GET", "POST", "PUT", "DELETE"],
-// };
-// app.use(cors(corsConfig));
-// app.options("*", cors(corsConfig));
-// app.use(express.json());
-// app.use(function (req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header(
-//     "Access-Control-Allow-Headers",
-//     "Origin, X-Requested-With, Content-Type, Accept,authorization"
-//   );
-//   next();
-// });
 app.use(express.json());
 
 // Verifying Token From User
@@ -228,7 +212,7 @@ async function run() {
     });
 
     // *******All Payment Related Apis*******
-    app.post("/create-payment-intent", async (req, res) => {
+    app.post("/create-payment-intent", verifyJWT, async (req, res) => {
       const service = req.body;
       const price = service.price;
       const amount = price * 100;
