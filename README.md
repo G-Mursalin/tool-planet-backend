@@ -26,10 +26,7 @@ Link: [https://tool-planet.web.app/](https://tool-planet.web.app/)
 
 # Website's Features and Functionality:
 
-- See the best tools you want
-- User can create own account
-- Admin and normal users different controls
-- Admin can add a products, manage all products amd manage all orders
-- User can orders tools
-- User can add a reviews
-- Pay by credit card
+- The Website’s data is stored in MongoDB and retrieved via the server-side API where I used Express JS.
+- Implemented Firebase Authentication (Google Sign in & Email/Password Login). Private Route & Admin Route is implemented for security purposes.
+- Separate Dashboard available for users and Admins with different facilities. Users can add reviews, see their order list and update their profile info. Admin can add products, delete the product and make any user admin.
+- Used Stripe for making payment gateway.

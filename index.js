@@ -45,6 +45,7 @@ async function run() {
     const userCollection = client.db("tool_planet").collection("users");
     const orderCollection = client.db("tool_planet").collection("orders");
     const reviewCollection = client.db("tool_planet").collection("reviews");
+    const paymentCollection = client.db("tool_planet").collection("payments");
     const userProfileCollection = client
       .db("tool_planet")
       .collection("profiles");
@@ -225,6 +226,21 @@ async function run() {
       res.send({
         clientSecret: paymentIntent.client_secret,
       });
+    });
+
+    // Update booking payment info [CheckoutForm.js]
+    app.patch("/booking/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const payment = req.body;
+      const filter = { _id: ObjectId(id) };
+      const updateDoc = {
+        $set: { paid: true, transactionId: payment.transactionId },
+      };
+
+      const updatedBooking = await orderCollection.updateOne(filter, updateDoc);
+      const result = await paymentCollection.insertOne(payment);
+
+      res.send(updateDoc);
     });
   } finally {
     //   await client.close();
