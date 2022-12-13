@@ -2,7 +2,7 @@
 
 ## Website Live Link:
 
-Link: [https://tool-planet.web.app/](https://tool-planet.web.app/)
+Link: [https://tool-planet.firebaseapp.com/](https://tool-planet.firebaseapp.com/)
 
 # Technology Used:
 
@@ -22,7 +22,7 @@ Link: [https://tool-planet.web.app/](https://tool-planet.web.app/)
 - Node JS
 - Dotenv
 - MongoDb
-- Heroku
+- Render
 
 # Website's Features and Functionality:
 
